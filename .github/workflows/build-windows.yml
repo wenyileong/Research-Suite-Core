@@ -24,7 +24,10 @@ jobs:
         shell: pwsh
         run: |
           # Failures are also reported as annotations, readable from the run summary and the API.
-          python -m pytest -q -rfE --tb=line -p no:cacheprovider 2>&1 | Tee-Object -FilePath pytest.log
+          # The window's self-test runs below on the packaged exe, which carries its own Tcl/Tk; in-process
+          # Tk on the runner's Python cannot always find init.tcl, so that one test is left to the exe here.
+          # It also runs in the tests workflow on Linux.
+          python -m pytest -q -rfE --tb=line -p no:cacheprovider -k "not test_window_self_test" 2>&1 | Tee-Object -FilePath pytest.log
           if ($LASTEXITCODE -ne 0) {
             Select-String -Path pytest.log -Pattern "^(FAILED|ERROR)|Error:|assert" |
               Select-Object -First 20 | ForEach-Object { Write-Output ("::error title=Test::" + $_.Line) }
