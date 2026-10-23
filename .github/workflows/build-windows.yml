@@ -27,6 +27,7 @@ jobs:
       - name: Smoke test
         shell: pwsh
         run: |
+          trap { Write-Output "::error title=Smoke test::$($_.Exception.Message)"; exit 1 }
           $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--self-test" -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw "self-test failed with exit code $($p.ExitCode)" }
           $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--version" -Wait -PassThru
@@ -34,6 +35,7 @@ jobs:
       - name: Package
         shell: pwsh
         run: |
+          trap { Write-Output "::error title=Package::$($_.Exception.Message)"; exit 1 }
           $v = (python -c "import sys; sys.path.insert(0, 'src'); import rscore; print(rscore.__version__)").Trim()
           New-Item -ItemType Directory -Force release | Out-Null
           Copy-Item dist\ResearchSuite.exe, packaging\READ_ME_FIRST.txt release\

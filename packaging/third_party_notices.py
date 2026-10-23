@@ -10,9 +10,16 @@ PyInstaller:
 
 from __future__ import annotations
 
+import os
 import platform
 import sys
 from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+#: Official Tcl and Tk licence texts, used when the build environment does not ship license.terms
+#: (Python's Windows installs place the Tcl library in tcl/, but not always the licence file).
+FALLBACK = {"tcl": HERE / "licences" / "tcl-license.terms", "tk": HERE / "licences" / "tk-license.terms"}
+SOURCES: dict[str, str] = {}
 
 
 def _read(path: Path) -> str | None:
@@ -22,12 +29,22 @@ def _read(path: Path) -> str | None:
         return None
 
 
-def _first(*paths: Path) -> str | None:
+def _first(*paths: Path, label: str = "") -> str | None:
     for p in paths:
         text = _read(p)
         if text:
+            if label:
+                SOURCES[label] = str(p)
             return text
     return None
+
+
+def _tcl_tk(kind: str, base: Path) -> str | None:
+    """licence.terms for Tcl or Tk: from Python's own tcl folder, a system Tcl, or the bundled copy."""
+    found = sorted(p for p in (base / "tcl").rglob("license.terms") if p.parent.name.lower().startswith(kind)) \
+        if (base / "tcl").is_dir() else []
+    system = sorted(Path("/usr/share/tcltk").glob(f"{kind}8*/license.terms"))
+    return _first(*found, *system, FALLBACK[kind], label=kind)
 
 
 def sections() -> list[tuple[str, str, str | None]]:
@@ -36,22 +53,20 @@ def sections() -> list[tuple[str, str, str | None]]:
     out.append((
         f"CPython {platform.python_version()} (interpreter and standard library)",
         "Python Software Foundation License Version 2, with the licences of its bundled parts",
-        _first(base / "LICENSE.txt", base / "LICENSE",
-               Path(sys.prefix) / "LICENSE.txt", base / "lib" / f"python{sys.version_info[0]}.{sys.version_info[1]}" / "LICENSE.txt"),
+        _first(base / "LICENSE.txt", base / "LICENSE", Path(sys.prefix) / "LICENSE.txt",
+               base / "lib" / f"python{sys.version_info[0]}.{sys.version_info[1]}" / "LICENSE.txt", label="cpython"),
     ))
     import tkinter
 
-    tcl = _first(*sorted(base.glob("tcl/tcl8*/license.terms")), *sorted(Path("/usr/share/tcltk").glob("tcl8*/license.terms")))
-    tk = _first(*sorted(base.glob("tcl/tk8*/license.terms")), *sorted(Path("/usr/share/tcltk").glob("tk8*/license.terms")))
-    out.append((f"Tcl {tkinter.TclVersion}", "Tcl/Tk licence (BSD-style)", tcl))
-    out.append((f"Tk {tkinter.TkVersion}", "Tcl/Tk licence (BSD-style)", tk))
+    out.append((f"Tcl {tkinter.TclVersion}", "Tcl/Tk licence (BSD-style)", _tcl_tk("tcl", base)))
+    out.append((f"Tk {tkinter.TkVersion}", "Tcl/Tk licence (BSD-style)", _tcl_tk("tk", base)))
     try:
         import PyInstaller
 
         pkg = Path(PyInstaller.__file__).resolve().parent
         boot = _first(pkg.parent / f"pyinstaller-{PyInstaller.__version__}.dist-info" / "licenses" / "COPYING.txt",
                       pkg.parent / f"pyinstaller-{PyInstaller.__version__}.dist-info" / "COPYING.txt",
-                      pkg / "COPYING.txt")
+                      pkg / "COPYING.txt", label="pyinstaller")
         version = PyInstaller.__version__
     except ImportError:
         boot, version = None, "unknown"
@@ -89,6 +104,14 @@ def main() -> int:
     target.write_text(text, encoding="utf-8")
     missing = text.count("(Licence text not found")
     print(f"wrote {target} ({missing} licence text(s) missing)")
+    for label, source in sorted(SOURCES.items()):
+        print(f"  {label}: {source}")
+    if os.environ.get("GITHUB_ACTIONS"):
+        # Annotations are visible in the run summary and through the API.
+        used = "; ".join(f"{k}={Path(v).name if 'licences' in v else v}" for k, v in sorted(SOURCES.items()))
+        print(f"::notice title=Third-party notices::{missing} missing; sources: {used}")
+        if missing:
+            print(f"::error title=Third-party notices::{missing} licence text(s) not found")
     return 1 if missing else 0
 
 
