@@ -47,3 +47,27 @@ jobs:
         with:
           name: ResearchSuite-windows
           path: ResearchSuite-*-windows.zip
+  # Also keeps the latest zip on the windows-build branch (one commit, replaced each time), so it can be
+  # fetched with git where GitHub's artifact storage is not reachable.
+  publish-branch:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: ResearchSuite-windows
+          path: out
+      - name: Commit to windows-build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd out
+          git init -q -b windows-build
+          git config user.name wenyileong
+          git config user.email wenyileong@users.noreply.github.com
+          printf 'Latest Windows build of the Research Suite launcher, from commit %s.\n' "${GITHUB_SHA}" > README.txt
+          git add -A
+          git commit -q -m "Windows build from ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" windows-build
