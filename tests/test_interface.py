@@ -117,3 +117,23 @@ def _display() -> bool:
 @pytest.mark.skipif(not _display(), reason="no display (the Windows build runs this on the packaged exe)")
 def test_window_self_test(tmp_path):
     app.self_test(tmp_path / "launcher.json")
+
+
+def test_packaging_includes_every_data_file():
+    spec = (SRC.parents[1] / "packaging" / "research_suite.spec").read_text(encoding="utf-8")
+    assert 'glob("*.json")' in spec and '"rscore" / "data"' in spec
+    assert 'ASSETS.glob("*.png")' in spec
+    for path in (SRC / "data").iterdir():
+        assert path.suffix == ".json", f"{path.name}: the spec packs only .json files from src/rscore/data"
+
+
+def test_self_test_reports_failure_without_a_dialog(tmp_path, monkeypatch):
+    from rscore.launcher import __main__ as launcher_main
+
+    def broken(_config):
+        raise RuntimeError("simulated failure")
+
+    monkeypatch.setattr(app, "self_test", broken)
+    log = tmp_path / "log.txt"
+    assert launcher_main.main(["--self-test", "--log", str(log)]) == 1
+    assert "simulated failure" in log.read_text(encoding="utf-8")

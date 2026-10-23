@@ -11,7 +11,9 @@ from rscore import __version__  # noqa: E402
 
 ASSETS = ROOT / "src" / "rscore" / "launcher" / "assets"
 datas = [(str(p), "rscore/launcher/assets") for p in sorted(ASSETS.glob("*.png"))]
-datas.append((str(ROOT / "src" / "rscore" / "data" / "iso3166.json"), "rscore/data"))
+# Every data file the core reads (jurisdiction codes, place aliases). A test checks that each file in
+# src/rscore/data is matched here.
+datas += [(str(p), "rscore/data") for p in sorted((ROOT / "src" / "rscore" / "data").glob("*.json"))]
 
 
 def _version_resource():

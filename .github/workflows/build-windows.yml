@@ -28,9 +28,18 @@ jobs:
         shell: pwsh
         run: |
           trap { Write-Output "::error title=Smoke test::$($_.Exception.Message)"; exit 1 }
-          $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--self-test" -Wait -PassThru
-          if ($p.ExitCode -ne 0) { throw "self-test failed with exit code $($p.ExitCode)" }
-          $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--version" -Wait -PassThru
+          # The self-test opens every page in both languages and runs the example import. It is given
+          # three minutes; a hung exe is stopped and fails the build rather than waiting for ever.
+          $log = Join-Path $env:RUNNER_TEMP "self_test.log"
+          $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--self-test","--log",$log -PassThru
+          if (-not $p.WaitForExit(180000)) { $p.Kill(); throw "self-test did not finish within 3 minutes" }
+          if (Test-Path $log) { Get-Content $log | ForEach-Object { Write-Output $_ } }
+          if ($p.ExitCode -ne 0) {
+            $first = if (Test-Path $log) { (Get-Content $log | Select-Object -Last 1) } else { "no log" }
+            throw "self-test failed (exit code $($p.ExitCode)): $first"
+          }
+          $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--version" -PassThru
+          if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "--version did not finish" }
           if ($p.ExitCode -ne 0) { throw "--version failed with exit code $($p.ExitCode)" }
       - name: Package
         shell: pwsh
