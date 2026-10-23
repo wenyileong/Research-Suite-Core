@@ -8,7 +8,7 @@ See ``docs/data_model_v1.md`` for the model and ``docs/cleanroom/README.md`` for
 are used.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 #: Generation of the store schema. Raised whenever a migration is added to ``rscore.store``.
 SCHEMA_GENERATION = 1

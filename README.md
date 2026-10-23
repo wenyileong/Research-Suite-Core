@@ -16,13 +16,14 @@ The core adopts the Lab's data conventions unchanged (fractions, ISO 3166-1 alph
 
 ## Status
 
-Version 0.2.0 covers Phase 1 and most of Phase 2 of the development roadmap.
+Version 0.3.0 covers Phase 1, most of Phase 2 and the Phase 3 importer.
 
 | Phase | Status |
 | --- | --- |
 | 1. Governance and licence audit | Done: [`docs/licence_audit_2026-10-23.md`](docs/licence_audit_2026-10-23.md), clean-room process, inspiration register |
 | 2. Shared core | In progress: data model v1, store, jurisdiction registry, snapshots, Lab export and the launcher done; the tools do not yet read or write the shared store |
-| 3 onwards | Not started |
+| 3. A-share importer | Importer done and tested, including against the Lab's own importer on example data; the gate (a real group in the Lab) awaits a release with subsidiary and control data. Findings from the first live release: [`docs/findings/ashare_release_20261023.md`](docs/findings/ashare_release_20261023.md) |
+| 4 onwards | Not started |
 
 ## What is here
 
@@ -34,6 +35,9 @@ Version 0.2.0 covers Phase 1 and most of Phase 2 of the development roadmap.
 | `src/rscore/jurisdictions.py` | The jurisdiction registry (250 records) |
 | `src/rscore/snapshot.py` | Canonical hashing, snapshot export and verification |
 | `src/rscore/export.py` | Export to the Lab's dataset format |
+| `src/rscore/places.py` | Place names (Chinese or English) to jurisdiction codes, without guessing |
+| `src/rscore/importers/ashare.py` | Import of A-share Company Intelligence releases ([mapping and rules](docs/importers/ashare.md)) |
+| `src/rscore/__main__.py` | Command line: `import-ashare`, `export-lab`, `snapshot`, `validate` |
 | `src/rscore/launcher/` | The launcher: tool detection, saved settings, English and Chinese text, the window |
 | `packaging/` | The PyInstaller specification, icon, notices script and quick-start note for `ResearchSuite.exe` |
 | `docs/data_model_v1.md` | The data model specification |
@@ -49,6 +53,15 @@ The icon (`packaging/icon/research_suite.svg`) shows three nodes for the suite's
 **Getting the exe.** GitHub builds it on a Windows runner: in the repository's Actions tab, choose *build-windows*, then *Run workflow*, and download the `ResearchSuite-windows` zip from the finished run. Pushing a tag such as `v0.2.0` also starts a build. To build on your own Windows computer instead, run `build_windows.bat` (Python 3.11 or later from python.org); the result is in `release\`.
 
 To run the launcher from source: `python -m rscore.launcher` (with `src` on the Python path).
+
+## Importing an A-share release
+
+```
+python -m rscore --store project.sqlite import-ashare path\to\ashare_release_... --report import_report
+python -m rscore --store project.sqlite export-lab lab_dataset
+```
+
+The report folder lists what was imported, every rejected row (by release row id and reason, never by a person's name) and two review files: holders and places that need a jurisdiction (fill in and pass back with `--overrides`), and revenue figures whose candidates disagree. See [`docs/importers/ashare.md`](docs/importers/ashare.md).
 
 ## Using the core
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 (24 October 2026)
+
+- A-share Company Intelligence importer (`python -m rscore import-ashare`): maps listed companies, shareholders, subsidiaries, controlling shareholders, control chains and annual revenue into the shared store, with a source record per disclosure document and page. Natural persons are excluded and never named in the store or reports. Misparsed rows are rejected with reasons: shifted shareholder tables (whole table), stakes outside (0, 100], stakes summing above 100, revenue candidates that disagree, implausibly small revenue.
+- Place-name matcher (`rscore.places`): Chinese and English names to jurisdiction codes; unmatched or ambiguous places go to review with a suggestion. Aliases seeded into `jurisdiction_aliases`.
+- Review loop: `review_jurisdictions.csv` filled in and passed back with `--overrides`; `review_revenue.csv` for conflicting revenue.
+- Command line `python -m rscore` with `import-ashare`, `export-lab`, `snapshot` and `validate`.
+- Findings from the first live release (`docs/findings/ashare_release_20261023.md`): shifted shareholder tables, a missed pseudonymisation, and revenue scale and digit errors in the scraper.
+- 98 tests, including the Lab's own importer accepting an imported example group.
+
 ## 0.2.0 (23 October 2026)
 
 - Suite launcher, `ResearchSuite.exe`: one window that finds the three tools (saved location, beside or inside the launcher's folder, the usual install folder, or the registry) and opens them; Locate saves a tool's location; English and Simplified Chinese interface; settings in `%APPDATA%\ResearchSuite\launcher.json`.
