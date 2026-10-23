@@ -1,0 +1,10 @@
+Copyright (c) 2026 Leong, Wen Yi. All rights reserved.
+
+No licence is granted at present. The licence for this repository (and for the suite it
+serves) is an open decision, recorded as decision 3 ("Suite licence") in the development
+roadmap. Until a licence is published in this file, no permission is given to use, copy,
+modify or distribute this software or its documentation, except as allowed by law.
+
+Third-party components keep their own licences. This repository has no runtime
+dependencies outside the Python standard library; its test tools (pytest, MIT licence)
+are installed separately and are not distributed with it.

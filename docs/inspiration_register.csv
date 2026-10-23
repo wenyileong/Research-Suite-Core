@@ -1,0 +1,26 @@
+function,reference,licence,licence_checked,use_mode,what_we_take,phase,status
+Graph analysis,NetworkX,BSD-3-Clause,2026-10-23 (package metadata),dependency,library as is,2,in use by the Lab
+Persistent homology cross-check,ripser (ripser.py),MIT,2026-10-23 (package metadata),test oracle only,comparison outputs,8,in use by the Lab (optional)
+Persistent homology cross-check,gudhi,MIT for own code; CGAL-based modules may be GPL-3.0,2026-10-23 (licence file; CGAL position unverified),test oracle only,comparison outputs,8,in use by the Lab (optional)
+Topological data analysis,KeplerMapper,MIT,to confirm,dependency or clean-room,Mapper pipeline,8,planned
+Topological data analysis,giotto-tda,AGPL-3.0,to confirm,clean-room,pipeline design,8,planned
+Community detection,Infomap,GPL-3.0,to confirm,clean-room from the published map equation,algorithm,8,planned
+Network library,python-igraph,GPL-2.0-or-later,to confirm,avoid,nothing,,excluded
+Market data cross-check,AKShare,MIT (code); source sites' terms vary,to confirm,test oracle only,comparison figures,4,planned
+Treaty data collection,untreaties,unknown,to confirm,read for approach only,structure of UN treaty pages,6,planned
+Literature metadata,pyalex (OpenAlex client),MIT,to confirm,clean-room thin client,endpoints; paging; DOI deduplication,7,planned
+Literature metadata,OpenAlex data,CC0-1.0,to confirm,data source,metadata,7,planned
+Reference extraction,GROBID,Apache-2.0,to confirm,clean-room,header and reference parsing approach,7,planned
+PDF text,PyMuPDF,AGPL-3.0,to confirm,avoid; use pypdf (BSD-3-Clause) instead,nothing,,excluded
+PDF text,pypdf,BSD-3-Clause,2026-10-23 (package metadata),dependency,library as is,7,in use by the scraper
+Reference management,Zotero,AGPL-3.0,to confirm,web API only,API calls,7,planned
+Reference management,Pyzotero,to confirm,to confirm,clean-room client,API calls,7,planned
+Legal citation parsing,eyecite,to confirm (believed permissive),to confirm,clean-room,tokenise-then-resolve design; UK patterns are new,7,planned
+Systematic review,ASReview,Apache-2.0,to confirm,clean-room or optional add-on,active-learning screening loop,7,planned
+Citation output,OSCOLA CSL style,CC BY-SA 3.0,to confirm,bundle with attribution,style rules,7,planned
+Citation output,citeproc-py,to confirm (believed BSD),to confirm,dependency,library as is,7,planned
+Staggered difference-in-differences,csdid-type Python packages,varies,to confirm,clean-room from Callaway and Sant'Anna (2021); package as test oracle,estimator,8,planned
+Econometrics,statsmodels,BSD-3-Clause,to confirm,dependency,library as is,8,planned
+Econometrics,linearmodels,to confirm (believed NCSA),to confirm,dependency,library as is,8,planned
+Econometrics,pyfixest,MIT,to confirm,dependency,library as is,8,planned
+Packaging,PyInstaller,GPL-2.0-or-later with the Bootloader Exception,2026-10-23 (package metadata),build tool,exception permits bundling our code,1,in use by all three tools
