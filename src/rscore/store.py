@@ -312,7 +312,7 @@ def _row_rules(table: str, where: str, row: dict[str, Any], report: Report) -> N
             report.error(table, where, "only direct relations are stored; indirect holdings are derived")
         if row.get("value_amount") is not None and not row.get("value_currency"):
             report.error(table, where, "value_amount requires value_currency")
-        if row.get("fraction") is None:
+        if row.get("fraction") is None and row.get("relation_type") != "control":
             report.warning(table, where, "fraction not reported; it is never imputed")
     if table == "entities" and row.get("is_natural_person") is True:
         report.error(table, where, "natural persons must be excluded or pseudonymised before import")

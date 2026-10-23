@@ -70,6 +70,13 @@ def default_config_path() -> Path:
 class Settings:
     language: str = "en"
     tool_paths: dict[str, str] = field(default_factory=dict)
+    project: str = ""                                   # path of the open project store
+    recent_projects: list[str] = field(default_factory=list)
+    last_release_dir: str = ""
+
+    def remember_project(self, path: str) -> None:
+        self.project = path
+        self.recent_projects = [path] + [p for p in self.recent_projects if p != path][:7]
 
     @classmethod
     def load(cls, path: Path) -> "Settings":
@@ -89,12 +96,17 @@ class Settings:
         language = data.get("language") if data.get("language") in LANGUAGES else "en"
         raw = data.get("tool_paths") if isinstance(data.get("tool_paths"), dict) else {}
         paths = {k: v for k, v in raw.items() if k in TOOLS_BY_KEY and isinstance(v, str)}
-        return cls(language, paths)
+        recent = [p for p in data.get("recent_projects", []) if isinstance(p, str)][:8] \
+            if isinstance(data.get("recent_projects"), list) else []
+        project = data.get("project") if isinstance(data.get("project"), str) else ""
+        last = data.get("last_release_dir") if isinstance(data.get("last_release_dir"), str) else ""
+        return cls(language, paths, project, recent, last)
 
     def save(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(".json.tmp")
-        data = {"version": 1, "language": self.language, "tool_paths": self.tool_paths}
+        data = {"version": 1, "language": self.language, "tool_paths": self.tool_paths, "project": self.project,
+                "recent_projects": self.recent_projects, "last_release_dir": self.last_release_dir}
         tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         os.replace(tmp, path)
 

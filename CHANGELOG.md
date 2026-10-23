@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 (24 October 2026)
+
+- The launcher becomes the suite's workspace: a sidebar of seven pages (Tools, Project, Import, Review, Data, Lab and snapshots, Check), each with a line on what it is for, in English and Simplified Chinese.
+- Tools page: a four-step guide (project, import, review, Lab) that ticks itself off.
+- Import page: release folder picker, the assumptions as explained options, import in the background with progress, results with counts and plain-language reasons for every row set aside; invented example data to try without a release.
+- Review page: holders and places needing a jurisdiction, with suggestions, a searchable picker and *use all suggestions*; choices saved in the project and the release imported again. Revenue conflicts listed.
+- Data page: searchable ownership, control and revenue tables; double-click a row to open its source document.
+- Lab and snapshots page: export in the Lab's format, open the Lab, take, list and verify snapshots. Check page: whole-project check with errors and warnings.
+- `rscore.services`: every capability as one function shared by the command line and the window. `rscore.demo`: the invented example release.
+- Safeguards: tests that every command has a window action, that every text key and rejection reason exists in both languages, and a self-test of every page and the example import, run under a virtual display in the test workflow and on the packaged exe in the Windows build. `docs/interface_guidelines.md`.
+- Control relations no longer warn that no stake is reported.
+- 110 tests.
+
 ## 0.3.0 (24 October 2026)
 
 - A-share Company Intelligence importer (`python -m rscore import-ashare`): maps listed companies, shareholders, subsidiaries, controlling shareholders, control chains and annual revenue into the shared store, with a source record per disclosure document and page. Natural persons are excluded and never named in the store or reports. Misparsed rows are rejected with reasons: shifted shareholder tables (whole table), stakes outside (0, 100], stakes summing above 100, revenue candidates that disagree, implausibly small revenue.

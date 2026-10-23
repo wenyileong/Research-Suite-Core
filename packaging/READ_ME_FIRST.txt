@@ -1,15 +1,21 @@
-Research Suite launcher
-=======================
+Research Suite
+==============
 
-ResearchSuite.exe opens the suite's tools from one window:
+ResearchSuite.exe is the suite's workspace. It opens the suite's tools (A-share Company Intelligence,
+the International Tax Network Lab and JAF Rule Bench), and its pages let you:
 
-  - A-share Company Intelligence
-  - International Tax Network Lab
-  - JAF Rule Bench
+  - create a project (one file per study);
+  - import an A-share Company Intelligence release, or try the invented example data;
+  - review what the import could not decide, such as a holder's jurisdiction;
+  - browse ownership, control and revenue, and open each row's source document;
+  - export the data for the Lab, and take verifiable snapshots for papers;
+  - check the whole project for problems.
 
-The launcher does not contain the tools. Install each tool as usual; the launcher finds tools in
-their usual install folders, or in folders beside or inside the launcher's own folder. For a tool it
-cannot find, click "Locate..." and choose the tool's .exe file; the launcher remembers the choice.
+Start on the Tools page and follow the four steps. The window works in English and Simplified Chinese
+(switch at the bottom left).
+
+The tools themselves are separate programs: install each as usual. The window finds them in their usual
+install folders, or click "Locate..." and choose a tool's .exe file.
 
 Settings are kept in %APPDATA%\ResearchSuite\launcher.json. Delete that file to reset them.
 

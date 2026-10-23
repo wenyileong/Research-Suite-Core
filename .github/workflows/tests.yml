@@ -1,5 +1,5 @@
-# Runs the test suite on every push and pull request (the launcher's window tests need a display and
-# run in build-windows instead).
+# Runs the test suite on every push and pull request, under a virtual display so that the window's
+# self-test (every page, both languages, the example import) runs too.
 name: tests
 on:
   push:
@@ -20,5 +20,6 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
+      - run: sudo apt-get install -y -q xvfb
       - run: python -m pip install "pytest>=8"
-      - run: python -m pytest -q
+      - run: xvfb-run -a python -m pytest -q -rs

@@ -2,7 +2,7 @@
 
 <img src="packaging/icon/research_suite.svg" alt="Research Suite icon" width="72" align="right">
 
-The shared core and launcher of a research software suite for international tax, corporate structure and legal research. The core holds what the suite's tools share: one data model, one jurisdiction registry, provenance for every value, and snapshots that let any figure be regenerated. The launcher, `ResearchSuite.exe`, opens the tools from one window.
+The shared core and launcher of a research software suite for international tax, corporate structure and legal research. The core holds what the suite's tools share: one data model, one jurisdiction registry, provenance for every value, and snapshots that let any figure be regenerated. `ResearchSuite.exe` is the suite's workspace: it opens the tools, and lays out everything the core can do as pages of one window.
 
 The suite brings together three existing tools, which this repository reads from but does not change:
 
@@ -16,7 +16,7 @@ The core adopts the Lab's data conventions unchanged (fractions, ISO 3166-1 alph
 
 ## Status
 
-Version 0.3.0 covers Phase 1, most of Phase 2 and the Phase 3 importer.
+Version 0.4.0 covers Phase 1, most of Phase 2 and the Phase 3 importer, all usable from the window.
 
 | Phase | Status |
 | --- | --- |
@@ -37,22 +37,37 @@ Version 0.3.0 covers Phase 1, most of Phase 2 and the Phase 3 importer.
 | `src/rscore/export.py` | Export to the Lab's dataset format |
 | `src/rscore/places.py` | Place names (Chinese or English) to jurisdiction codes, without guessing |
 | `src/rscore/importers/ashare.py` | Import of A-share Company Intelligence releases ([mapping and rules](docs/importers/ashare.md)) |
+| `src/rscore/services.py` | Every capability as one function, shared by the command line and the window |
+| `src/rscore/demo.py` | An invented example release, for trying the suite and for tests |
 | `src/rscore/__main__.py` | Command line: `import-ashare`, `export-lab`, `snapshot`, `validate` |
-| `src/rscore/launcher/` | The launcher: tool detection, saved settings, English and Chinese text, the window |
+| `src/rscore/launcher/` | The window: pages, tool detection, saved settings, English and Chinese text |
 | `packaging/` | The PyInstaller specification, icon, notices script and quick-start note for `ResearchSuite.exe` |
 | `docs/data_model_v1.md` | The data model specification |
+| `docs/interface_guidelines.md` | How the window is kept complete and intuitive as the suite grows |
 | `docs/cleanroom/` | The clean-room process and its specification template |
 | `docs/inspiration_register.csv` | Every open-source reference, its licence and how it is used |
 
-## The launcher
+## The window
 
-`ResearchSuite.exe` shows the three tools with an Open and a Locate button each. It finds a tool where its installer puts it, or in a folder beside or inside the launcher's own folder; for anything else, Locate saves the tool's location. The window switches between English and Simplified Chinese, and remembers the choice. The launcher does not contain the tools: each stays a separate program with its own licence.
+`ResearchSuite.exe` opens on a sidebar of pages, each beginning with a line on what it is for. Everything works in English and Simplified Chinese.
+
+| Page | What it does |
+| --- | --- |
+| Tools | Opens A-share Company Intelligence, the Lab and JAF Rule Bench (with Locate for tools installed elsewhere), and shows a four-step guide (project, import, review, Lab) that ticks itself off. |
+| Project | Creates or opens a project (one file per study) and shows what it holds. |
+| Import | Imports an A-share release in the background, with the assumptions as explained options, and shows what came in and what was set aside and why. *Try the invented example data* works without a release. |
+| Review | Lists the holders and places that need a jurisdiction, with suggestions and a searchable picker; choices are saved in the project and the release is imported again. Lists revenue figures that disagree. |
+| Data | Browses ownership, control and revenue, searchable; double-click a row to open its source document. |
+| Lab and snapshots | Exports the data in the Lab's format and opens the Lab; takes, lists and verifies snapshots. |
+| Check | Re-checks the whole project and lists errors and warnings. |
+
+A project keeps its reports, review choices, Lab exports and snapshots in a folder beside it (`<project>_files`). The rules that keep the window complete as the suite grows are in [`docs/interface_guidelines.md`](docs/interface_guidelines.md).
 
 The icon (`packaging/icon/research_suite.svg`) shows three nodes for the suite's three levels of analysis, joined to a hub for the shared core: red for firms (A-share Company Intelligence), green for networks (the Lab) and amber for regimes (JAF Rule Bench), on the Lab's indigo. `packaging/icon/make_icon.py` redraws every size from that design (it needs Pillow, a development-only dependency).
 
-**Getting the exe.** GitHub builds it on a Windows runner: in the repository's Actions tab, choose *build-windows*, then *Run workflow*, and download the `ResearchSuite-windows` zip from the finished run. Pushing a tag such as `v0.2.0` also starts a build. To build on your own Windows computer instead, run `build_windows.bat` (Python 3.11 or later from python.org); the result is in `release\`.
+**Getting the exe.** GitHub builds it on a Windows runner: in the repository's Actions tab, choose *build-windows*, then *Run workflow*, and download the `ResearchSuite-windows` zip from the finished run. Pushing a tag such as `v0.4.0` also starts a build, and every build also leaves its zip on the `windows-build` branch. To build on your own Windows computer instead, run `build_windows.bat` (Python 3.11 or later from python.org); the result is in `release\`.
 
-To run the launcher from source: `python -m rscore.launcher` (with `src` on the Python path).
+To run the window from source: `python -m rscore.launcher` (with `src` on the Python path).
 
 ## Importing an A-share release
 

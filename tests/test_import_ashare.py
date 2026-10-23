@@ -58,7 +58,7 @@ def test_group_imported(imported):
     own = {r["relation_id"].split(":")[-2] + r["relation_id"].split(":")[-1]: r for r in store.rows("ownership")}
     ents = {r["entity_id"]: r for r in store.rows("entities")}
     # The controlling shareholder (domestic type, so CHN) holds 51.2% of the listed company.
-    assert own["own1"]["fraction"] == pytest.approx(0.512) and own["own1"]["held_id"] == "ashare:co:000999"
+    assert own["own1"]["fraction"] == pytest.approx(0.512) and own["own1"]["held_id"] == "ashare:co:DEMO01"
     # Subsidiaries: Hong Kong, Cayman, Shenzhen.
     subs = {ents[r["held_id"]]["jurisdiction_id"]: r["fraction"] for k, r in own.items() if k.startswith("sub")}
     assert subs == {"HKG": 1.0, "CYM": 1.0, "CHN": 0.7}
@@ -66,7 +66,7 @@ def test_group_imported(imported):
     assert own["cob1"]["relation_type"] == "control" and own["cob1"]["fraction"] is None
     fin = store.rows("entity_financials")
     assert len(fin) == 1 and fin[0]["operating_revenue"] == 1.5e10 and fin[0]["period"] == "2025"
-    assert ents["ashare:co:000999"]["reported_name"] == "示例股份有限公司"
+    assert ents["ashare:co:DEMO01"]["reported_name"] == "示例股份有限公司"
 
 
 def test_rejections(imported):
@@ -88,7 +88,7 @@ def test_rejections(imported):
 def test_a_shift_rejects_the_whole_table(tmp_path):
     from fake_release import TABLES, _sh
     import copy
-    import fake_release
+    import fake_release  # noqa: F401
     saved = copy.deepcopy(TABLES["ownership_observations"])
     try:
         TABLES["ownership_observations"][:] = [
@@ -136,14 +136,14 @@ def test_overrides_and_suggestions(tmp_path, release):
 
 def test_company_filter_and_assumptions(tmp_path, release):
     with Store(tmp_path / "p.sqlite") as store:
-        report = ashare.import_release(store, release, ashare.Options(companies=("600998",),
+        report = ashare.import_release(store, release, ashare.Options(companies=("DEMO02",),
                                                                       assume_consolidated=True))
         # The three candidates disagree (one is 1,000 times too small, one is implausibly small): none imported.
         assert store.count("entity_financials") == 0
         r = reasons(report)
         assert r[("financial_facts", "revenue_candidates_disagree")] == 2
         assert r[("financial_facts", "revenue_implausibly_small")] == 1
-        assert report.revenue_review == [("600998", "2025", "3,000,000 / 3,000,000,000")]
+        assert report.revenue_review == [("DEMO02", "2025", "3,000,000 / 3,000,000,000")]
         assert any("assume-consolidated" in n for n in report.notes)
 
 
