@@ -22,7 +22,6 @@ Eleven company-years hold revenue candidates that disagree by more than 1 per ce
 
 - **Scale:** a factor of 1,000 (for example 000063: 133,895,460 against 133,895,500,000, a statement table read as yuan although printed in thousands) or of 100 (000158, 000333). The statement-table parser carries the higher confidence (0.7 against 0.65), so choosing by confidence would keep the wrong value.
 - **A dropped leading digit:** 000078 (6,667,709,464 against 26,667,709,464) and 000301 (25,587,320,327 against 125,587,320,327).
-
 - **No simple factor:** 000016, 000042, 000043, 000045 and 000060, which suggests a figure taken from the parent company's own statement or from another line.
 
 Six further candidates are below 1 million yuan (for example 5.37 and 57.1), which cannot be a listed group's annual revenue.
