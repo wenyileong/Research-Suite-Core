@@ -6,5 +6,7 @@ roadmap. Until a licence is published in this file, no permission is given to us
 modify or distribute this software or its documentation, except as allowed by law.
 
 Third-party components keep their own licences. This repository has no runtime
-dependencies outside the Python standard library; its test tools (pytest, MIT licence)
-are installed separately and are not distributed with it.
+dependencies outside the Python standard library; its build and test tools (PyInstaller,
+pytest, Pillow) are installed separately and are not distributed with it. The Windows
+launcher (ResearchSuite.exe) bundles CPython, Tcl/Tk and the PyInstaller bootloader,
+whose licences are reproduced in the THIRD_PARTY_NOTICES.txt file that accompanies it.

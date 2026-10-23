@@ -4,14 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "research-suite-core"
-version = "0.1.0"
-description = "Shared data model, jurisdiction registry, provenance and snapshots for the research software suite"
+version = "0.2.0"
+description = "Shared core and launcher for the research software suite"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Leong, Wen Yi" }]
 license = { text = "All rights reserved (licence to be decided; see LICENSE)" }
 # Standard library only, so that the core adds nothing to a tool's Windows executable.
 dependencies = []
+
+[project.gui-scripts]
+research-suite = "rscore.launcher.__main__:main"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]
@@ -20,7 +23,7 @@ test = ["pytest>=8.0"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-rscore = ["data/*.json"]
+rscore = ["data/*.json", "launcher/assets/*.png"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -1,0 +1,47 @@
+# Builds ResearchSuite.exe on GitHub's Windows runners when a tag like v0.2.0 is pushed, or on demand
+# from the Actions tab. The result is uploaded as an artifact (a zip with the exe, the quick-start note,
+# the licence and the third-party notices).
+name: build-windows
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: python -m pip install "pyinstaller>=6.10,<7" "pytest>=8"
+      - name: Test
+        run: python -m pytest -q
+      - name: Build
+        run: pyinstaller --noconfirm --clean packaging\research_suite.spec --distpath dist --workpath build
+      - name: Smoke test
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--self-test" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "self-test failed with exit code $($p.ExitCode)" }
+          $p = Start-Process -FilePath dist\ResearchSuite.exe -ArgumentList "--version" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "--version failed with exit code $($p.ExitCode)" }
+      - name: Package
+        shell: pwsh
+        run: |
+          $v = (python -c "import sys; sys.path.insert(0, 'src'); import rscore; print(rscore.__version__)").Trim()
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item dist\ResearchSuite.exe, packaging\READ_ME_FIRST.txt release\
+          Copy-Item LICENSE release\LICENSE.txt
+          python packaging\third_party_notices.py release\THIRD_PARTY_NOTICES.txt
+          if ($LASTEXITCODE -ne 0) { throw "third-party notices incomplete" }
+          Compress-Archive -Path release\* -DestinationPath "ResearchSuite-$v-windows.zip"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ResearchSuite-windows
+          path: ResearchSuite-*-windows.zip

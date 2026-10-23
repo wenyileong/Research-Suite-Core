@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 (23 October 2026)
+
+- Suite launcher, `ResearchSuite.exe`: one window that finds the three tools (saved location, beside or inside the launcher's folder, the usual install folder, or the registry) and opens them; Locate saves a tool's location; English and Simplified Chinese interface; settings in `%APPDATA%\ResearchSuite\launcher.json`.
+- Suite icon, with its editable SVG source and a script that redraws every size.
+- Windows packaging: PyInstaller specification with version information, third-party notices generated from the build environment, `build_windows.bat`, and a GitHub Actions workflow that tests, builds, smoke-tests and uploads the exe.
+- Test workflow on Python 3.11 to 3.13. 70 tests in all.
+
 ## 0.1.0 (23 October 2026)
 
 First version: Phase 1 of the development roadmap and the first part of Phase 2.
